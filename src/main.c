@@ -3,17 +3,13 @@
 #include <pthread.h>
 #include "log.h"
 
-//pthread_mutex_t rdLock = PTHREAD_MUTEX_INITIALIZER;
 pthread_rwlock_t rwlock;
 
 void my_lock(void* wdLock, int lock)
 {
-	printf("my_lock...\n");
 	if(lock == 1){
-		printf("lock...\n");
 		pthread_rwlock_wrlock((pthread_rwlock_t *)wdLock);
 	}else{
-		printf("unlock...\n");
 		pthread_rwlock_unlock((pthread_rwlock_t*)wdLock);
 	}
 }
@@ -36,13 +32,16 @@ int main(int argc, char** argv)
 	}
 
 	log_set_fp(fp);
-
 	log_set_udata(&rwlock);
-
 	log_set_lock(my_lock);
 
 	log_info("Hello, world\n");
 
+	if(fp){
+		fclose(fp);
+		fp = NULL;
+	}
 	pthread_rwlock_destroy(&rwlock);
+
 	return 0;
 }
